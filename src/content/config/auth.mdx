@@ -17,21 +17,27 @@ journalctl -u <单元名> | grep Emergency
 在**安全**页修改，最短 12 位，以 argon2id 哈希存储。改密码会注销所有登录会话，包括正开着的实时推送
 连接：那条连接里带着各节点的 token，不断开的话，它会比被注销的会话活得更久。
 
-### 重置应急密码
+### 应急密码忘了
 
-忘了或没记下来，就重置一个。旧密码立即失效，所有会话被注销，hub 不用重启：
+hub 没有内置的重置命令：`monitor-hub --reset-password` 会直接报 `unknown argument`（一键脚本也没有这个
+参数）。可以清掉数据库里的密码哈希，让 hub 下次启动当成首次运行，重新生成并打印一个：
 
 ```bash
-# 一键脚本
-sudo ./install-hub.sh --reset-password
-# Docker
-docker exec monitor /monitor-hub --db /data/monitor.db --reset-password
-# 手动部署，数据库路径换成自己的
-monitor-hub --db /opt/monitor/data/monitor.db --reset-password
+# 1. 停服务
+sudo systemctl stop monitor-hub
+# 2. 删掉密码哈希；路径是一键脚本部署的数据库
+sudo sqlite3 /opt/monitor/data/monitor.db \
+  "DELETE FROM setting WHERE key = 'admin_password_hash';"
+# 3. 启动。它像首次安装那样在标准输出里打印新密码
+sudo systemctl start monitor-hub
+journalctl -u monitor-hub -n 20 | grep Emergency
 ```
 
-新密码只打印在执行命令的终端里。数据库文件必须已经存在，路径写错时直接报错，不会新建空库。提示
-`unknown argument` 说明 hub 版本太旧，先升级。
+需要机器上有 `sqlite3`（Debian、Ubuntu 装 `sqlite3` 包）。仓库里没有这个命令，是直接在数据库上操作。
+
+只删这一行，节点、历史、设置都不动。旧密码随即失效；**已经登录的其它设备不会被注销**，会话是另一张表，
+要一起清掉就在**安全**页逐个注销。Docker 部署同理：先停容器，对数据卷里的 `monitor.db` 执行同一条 SQL
+（镜像里没有 shell 和 `sqlite3`，要在宿主机上操作），再启动容器看 `docker logs`。
 
 ## GitHub 单点登录
 
@@ -62,8 +68,11 @@ Client Secret 保存后读不回来，面板只显示「已设置」。授权只
 
 ## 会话与限流
 
-- 登录会话 14 天过期。**安全**页列出所有会话，可以逐个注销
-- 改密码、重置密码、导入备份都会注销全部会话
+- 登录会话 14 天过期。**安全**页的**登录会话**列出所有会话，可以逐个注销，当前设备带「当前设备」标记
+- 每条会话记录**登录时间、方式、来源 IP、设备和最后活动**。方式是「应急密码」或 `GitHub · 用户名`；
+  设备从浏览器的 User-Agent 猜出（如 `Chrome · macOS`），鼠标停在上面看原始字符串；最后活动按
+  「刚刚 / N 分钟前 / N 小时前 / N 天前」显示，每次带会话的请求都会刷新，最快一分钟写一次
+- 已经登录的设备上，改密码、导入备份都会注销全部会话
 - 同一来源地址 15 分钟内密码输错 5 次即锁定，登录成功清零。反代要透传 `X-Forwarded-For`，否则所有
   访客共用一个计数，见[反向代理](/install/reverse-proxy#3-透传-x-forwarded-proto-和-x-forwarded-for)
 
