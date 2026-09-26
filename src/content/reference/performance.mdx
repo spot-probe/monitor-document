@@ -1,6 +1,11 @@
 测试机是 3 核 3.8 GiB 的 Xeon E5-2699 v4，Debian 12，release 构建
-（LTO + `opt-level=z` + strip）。负载来自一个模拟 agent 程序。体积、空转内存、冷启动与密码登录
-按 hub v1.2.0、agent v1.1.0 的发布版二进制实测（musl 静态链接，与 Docker 镜像里的是同一个）。
+（LTO + `opt-level=z` + strip）。负载来自一个模拟 agent 程序。
+
+<Note>
+  这一页的数字实测于上游 hub v1.2.0、agent v1.1.0 的发布版二进制（musl 静态链接，与 Docker 镜像里的是
+  同一个），用来说明这套设计的大致量级。本站对应的当前版本没有按同一套方法逐项复测，绝对值请以你自己的
+  机器为准。
+</Note>
 
 ## 装机体积
 

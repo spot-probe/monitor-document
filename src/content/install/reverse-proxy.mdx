@@ -177,8 +177,10 @@ curl -s --http1.1 --max-time 3 -o /dev/null -w '%{http_code}\n' \
   https://hub.example.com/api/ws
 ```
 
-面板**节点**页的「添加节点」能点，说明是从 HTTPS 域名进的；从 IP 或明文地址进面板时它是灰的。hub 依据的
-是浏览器发来的 `Origin`，不看 `Host` 和 `X-Forwarded-Proto`，所以反代不要清掉或改写 `Origin`。
+面板**节点**页的「添加节点」能点，说明是从 HTTPS 域名进的；从 IP 或明文地址进面板时它是灰的。hub 看三样：
+反代转发过来的 `Host`（必须是域名）、`X-Forwarded-Proto`（必须是 `https`，没给 hub 配 `--site` 时尤其
+重要），以及浏览器发来的 `Origin`（带了就必须和 `Host` 同源）。所以反代既要在 `Host` 里保留域名、透传
+`X-Forwarded-Proto`，也不要清掉或改写 `Origin`。
 
 `X-Forwarded-Proto` 是否生效，看登录后的会话 cookie 有没有 `Secure` 标志：浏览器开发者工具的
 应用 → Cookie 里，`monitor_session` 那一行。

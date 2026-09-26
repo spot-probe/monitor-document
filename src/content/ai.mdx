@@ -123,9 +123,9 @@ WebSocket 能升级，期望输出 101（升级后连接保持，由 --max-time 
                   握手报 HTTP 400 = 反代没转发 WebSocket 升级头；
                   连接超时 = 节点到 hub 的网络不通
 周期性掉线      → 反代读写超时太短，或者没关 proxy_buffering
-"添加节点"是灰的 → 按钮上方那行字就是原因：不是从 HTTPS 域名进的、
-                  走隧道进面板没给 hub 配 --site，或者 --site 不是 https 加域名
-提示缺 Origin 头 → 反代清掉了 Origin，删掉 proxy_set_header Origin 那一行
+"添加节点"是灰的 → 按钮上方那行字就是原因：不是从 HTTPS 域名进的，
+                  或者 hub 启动时带的 --site 不是 https 加域名；反代把 Host 改写了、
+                  没有透传 X-Forwarded-Proto 也会这样
 导入备份 413    → 反代的 client_max_body_size 没设到 8m
 今日流量不归零  → Docker 部署没设 TZ 环境变量
 

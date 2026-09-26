@@ -60,48 +60,8 @@ grep "counting traffic" /var/log/monitor-agent.log
 软路由、桥接了软路由的宿主机上，一个包会先后经过 WAN 口和 LAN 口两块真网卡，按默认规则会算两遍。
 哪块面向运营商只有你知道，需要手动指定。
 
-点节点的安装按钮打开弹窗，打开**指定统计的网卡**，在「只统计」或「不统计」里填网卡名，下面的安装命令随之
-带上 `--iface`。节点在线时，弹窗会显示并预填它当前的设置。
-
-直接写命令也一样：
-
-```bash
-curl -fsSL https://hub.example.com/install.sh | sh -s -- \
-  --server https://hub.example.com --token <token> --iface eth1
-```
-
-面向运营商的一般是默认路由所在的那块：
-
-```bash
-# dev 后面就是网卡名
-ip route show default
-```
-
-| 机器 | `--iface` |
-|---|---|
-| PPPoE 拨号 | 拨号口，OpenWrt 叫 `pppoe-wan`，pppd 叫 `ppp0` |
-| DHCP 或静态 IP 上网的软路由 | WAN 口，如 `eth1` |
-| PVE 宿主机上桥接了软路由 | 接运营商的那块物理口，如 `enp1s0` |
-| PVE 宿主机只算自己、不算 guest | `vmbr0` |
-
-写法：
-
-| 弹窗 | 命令 | 含义 |
-|---|---|---|
-| 只统计 `eth1, eth2` | `--iface eth1,eth2` | 只统计列出的网卡，默认规则不再生效 |
-| 不统计 `eth0` | `--iface -eth0` | 从本来会计入的网卡里去掉这一块，如软路由的 LAN 口；排除优先于列出 |
-
-只认完整的网卡名，`eth*` 这类通配会被拒绝，以免什么都没匹配上却以为设好了。
-
-**批量添加**的弹窗里也有这个选项。一批机器都有一块同名的内网网卡时（比如都叫 `ens19`），在「不统计」
-里填它，每台都只去掉那一块。
-
-### 改设置
-
-在安装弹窗里改好，复制命令到那台机器上重跑。开关关着时命令不带 `--iface`，重跑（包括升级）沿用机器上
-原来的设置；开关打开、两栏都留空，生成 `--iface ''`，恢复默认规则。
-
-也可以直接改配置文件：
+面板和 hub 的安装命令里都**没有**这个选项。agent 自己认 `--iface` 和 `MONITOR_IFACE`，所以要在机器上
+改配置文件：
 
 ```bash
 # 改 MONITOR_IFACE= 这一行，没有就加一行
@@ -113,6 +73,39 @@ systemctl restart monitor-agent
 # OpenRC
 rc-service monitor-agent restart
 ```
+
+service 文件用 `EnvironmentFile`（OpenRC 用 `start_pre` 载入）读这个文件，所以加一行就够了，不用改
+`ExecStart`。
+
+面向运营商的一般是默认路由所在的那块：
+
+```bash
+# dev 后面就是网卡名
+ip route show default
+```
+
+| 机器 | `MONITOR_IFACE` |
+|---|---|
+| PPPoE 拨号 | 拨号口，OpenWrt 叫 `pppoe-wan`，pppd 叫 `ppp0` |
+| DHCP 或静态 IP 上网的软路由 | WAN 口，如 `eth1` |
+| PVE 宿主机上桥接了软路由 | 接运营商的那块物理口，如 `enp1s0` |
+| PVE 宿主机只算自己、不算 guest | `vmbr0` |
+
+写法：
+
+| 值 | 含义 |
+|---|---|
+| `eth1,eth2` | 只统计列出的网卡，默认规则不再生效 |
+| `-eth0` | 从本来会计入的网卡里去掉这一块，如软路由的 LAN 口；排除优先于列出 |
+| 空 | 恢复默认规则 |
+
+只认完整的网卡名。`eth*` 这类通配**没有特殊含义**，会被当成一个普通名字，匹配不到任何网卡：如果它是
+唯一一项，结果就是什么都不统计，且没有任何提示。
+
+<Note warn>
+  面板里的安装命令重装或升级时，会把 `/opt/monitor/agent.env` 重写成只有 hub 地址和 token 两行，
+  `MONITOR_IFACE` 随之丢失，装完要再加一次。
+</Note>
 
 改了之后 hub 重新对基线：从这一刻起按新的网卡累加，已有的总流量不变，新旧两组网卡读数之差不会被当成
 流量。网卡增减、被重新归类时也一样。

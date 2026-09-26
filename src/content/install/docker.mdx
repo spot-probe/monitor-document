@@ -1,7 +1,7 @@
 ```bash
 docker run -d --name monitor --restart unless-stopped \
   -p 127.0.0.1:28080:28080 -v monitor-data:/data -e TZ=Asia/Shanghai \
-  stqfdyr/monitor
+  ghcr.io/spot-probe/monitor
 ```
 
 镜像发布在 GHCR（`ghcr.io/spot-probe/monitor`），
@@ -17,7 +17,7 @@ docker run -d --name monitor --restart unless-stopped \
 docker logs monitor | grep Emergency
 ```
 
-忘了见[重置应急密码](/config/auth#重置应急密码)。
+忘了怎么办见[登录与安全](/config/auth#应急密码忘了)。
 
 <Note warn>
   今日流量、月度周期和到期日都按本地日期切换。不设 `TZ` 就按 UTC 算，东八区要到早上 8 点才跨日，
@@ -29,7 +29,7 @@ docker logs monitor | grep Emergency
 ```yaml
 services:
   monitor:
-    image: stqfdyr/monitor
+    image: ghcr.io/spot-probe/monitor
     container_name: monitor
     restart: unless-stopped
     # 只对本机开放，域名由反代接进来
@@ -54,7 +54,7 @@ sudo mkdir -p /opt/monitor-data
 sudo chown 65534:65534 /opt/monitor-data
 docker run -d --name monitor --restart unless-stopped \
   -p 127.0.0.1:28080:28080 -v /opt/monitor-data:/data -e TZ=Asia/Shanghai \
-  stqfdyr/monitor
+  ghcr.io/spot-probe/monitor
 ```
 
 ## 升级
@@ -63,13 +63,13 @@ docker run -d --name monitor --restart unless-stopped \
 
 ```bash
 # 拉取新镜像
-docker pull stqfdyr/monitor
+docker pull ghcr.io/spot-probe/monitor
 # 删除旧容器
 docker rm -f monitor
 # 再执行一遍当初的 docker run 命令
 docker run -d --name monitor --restart unless-stopped \
   -p 127.0.0.1:28080:28080 -v monitor-data:/data -e TZ=Asia/Shanghai \
-  stqfdyr/monitor
+  ghcr.io/spot-probe/monitor
 ```
 
 compose 部署的，在 compose 文件所在目录执行：
