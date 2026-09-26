@@ -3,7 +3,7 @@
 安装命令见[快速开始](/install/quick-start)。脚本从 GitHub release 下载二进制，按 `sha256sums.txt` 校验后
 放进 `/opt/monitor`，建一个 `monitor` 系统用户，写一个加固过的 systemd 单元，hub 只监听 `127.0.0.1`。
 
-脚本只支持 systemd。有终端时显示菜单（安装 / 升级、卸载、状态、日志、重置密码）；经 `curl ... | sh`
+脚本只支持 systemd。有终端时显示菜单（安装 / 升级、卸载、状态、日志）；经 `curl ... | sh`
 管道执行时没有终端可以作答，直接按默认值安装。
 
 ### 参数
@@ -14,7 +14,6 @@
 | `--site <url>` | 一般不用填，见下文[什么时候需要 `--site`](#什么时候需要---site) |
 | `--uninstall` | 卸载，数据保留在 `/opt/monitor/data`，见[卸载](/install/uninstall) |
 | `--purge` | 卸载并删除数据库，不可恢复 |
-| `--reset-password` | 重置应急密码，登出所有会话 |
 | `--yes` / `-y` | 跳过确认 |
 | `--help` / `-h` | 显示用法 |
 
@@ -43,7 +42,7 @@ systemctl status monitor-hub
 journalctl -u monitor-hub -f
 ```
 
-重置应急密码见[登录与安全](/config/auth#重置应急密码)。
+重置应急密码见[登录与安全](/config/auth#应急密码忘了)。
 
 ## 升级
 
@@ -55,13 +54,11 @@ sudo ./install-hub.sh
 
 - 新二进制校验通过才替换；新版起不来时自动换回上一版
 - 没写的参数沿用上次安装的，端口和 `--site` 不会被冲掉
-- 脚本先把自己和最新 release 比对，不是最新版就下载新版、按 `sha256sums.txt` 校验、覆盖原文件，
-  再用新版接着装
 
-v1.2.0 及更早的脚本（当时从 `raw.githubusercontent.com` 下载）没有这一步自检，要按
+脚本不会自我更新：每次用到的就是手上这一份。要拿到新脚本，按
 [快速开始](/install/quick-start)里的命令重新下载一次。
 
-面板的**更新**页显示 hub 的当前版本和最新版本。Docker 部署的升级见 [Docker 部署](/install/docker#升级)。
+面板左上角在站点名旁显示正在运行的 hub 版本。Docker 部署的升级见 [Docker 部署](/install/docker#升级)。
 
 ## 不用脚本
 
@@ -79,7 +76,6 @@ monitor-hub
 | `--db` | `monitor.db` | SQLite 路径 |
 | `--site` | 空 | 对外地址，只有个别反代场景需要 |
 | `--themes` | 数据库同级的 `themes/` | 主题目录 |
-| `--reset-password` | | 重置应急密码并打印出来，然后退出。数据库必须已存在 |
 
 默认的 `[::]:28080` 在 Linux 上同时接收 IPv6 和 IPv4（v4-mapped 地址），双栈机器不用额外配置；内核
 禁用了 IPv6 或设了 `bindv6only=1` 时自动退回 `0.0.0.0:28080`。
@@ -97,17 +93,18 @@ monitor-hub
 不带 `--site` 时，面板按浏览器地址栏里的地址生成安装命令，会话 cookie 的 `Secure` 标志看反代发来的
 `X-Forwarded-Proto`。常规反代不用填。
 
-三种情况要填：
+两种情况要填：
 
 - 节点要连的域名和你进面板用的域名不是同一个：填节点可达的 HTTPS 域名
-- 通过 SSH 隧道进面板，地址栏是 `http://127.0.0.1:PORT`：节点连不上这个地址，用 `--site` 补上
 - 反代不发 `X-Forwarded-Proto`：cookie 拿不到 `Secure`，用 `--site https://...` 强制加上
 
 `--site` 必须是 `https://` 加域名，可以带端口，不能是 IP，不能带路径。不符合时 hub 照常启动，但拒绝
 添加和安装节点。
 
 <Note>
-  `--site` 不能把 IP 入口变成域名入口。从公网 IP 或明文地址进面板时，添加节点、批量添加和安装命令
-  都不可用，填了 `--site` 也一样。回环地址是例外：隧道那一段是加密的，所以 `http://127.0.0.1:PORT`
-  配上合法的 `--site` 可以添加节点。
+  能不能添加节点，看的是**浏览器地址栏那个地址**，再加反代发来的 `X-Forwarded-Proto`，`--site` 补不了
+  这两样。从 IP 或明文地址进面板时，添加节点、批量添加和安装命令都不可用，填了 `--site` 也一样：
+  `--site` 只决定命令里写哪个域名、cookie 要不要 `Secure`，不改变入口本身是不是 HTTPS 域名。
+  回环地址不是例外——`http://127.0.0.1:PORT` 即使配了合法的 `--site` 也不能添加节点，因为 hub 拿到的
+  `Host` 仍是 `127.0.0.1`。
 </Note>

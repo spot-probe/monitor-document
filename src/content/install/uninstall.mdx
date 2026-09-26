@@ -119,7 +119,7 @@ docker rm -f monitor
 # 删除数据卷，即数据库和主题，不可恢复；要保留数据就跳过
 docker volume rm monitor-data
 # 删除镜像
-docker rmi stqfdyr/monitor
+docker rmi ghcr.io/spot-probe/monitor
 ```
 
 compose 装的，在 compose 文件所在的目录执行。只动 monitor 这一个服务，同一文件里的反代等其他服务不受影响：
@@ -132,7 +132,7 @@ V=$(docker volume ls -qf label=com.docker.compose.volume=monitor-data)
 # 删除数据卷，即数据库和主题，不可恢复；要保留数据就跳过
 docker volume rm $V
 # 删除镜像
-docker rmi stqfdyr/monitor
+docker rmi ghcr.io/spot-probe/monitor
 ```
 
 最后把 compose 文件里的 `monitor` 服务和 `monitor-data` 卷删掉。
@@ -150,7 +150,7 @@ docker rm -f monitor
 # 换成你挂载的目录；数据库和主题都在里面，不可恢复
 rm -rf /opt/monitor-data
 # 删除镜像
-docker rmi stqfdyr/monitor
+docker rmi ghcr.io/spot-probe/monitor
 ```
 
 <Note warn>

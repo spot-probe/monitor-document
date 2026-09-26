@@ -19,7 +19,7 @@ sudo ./install-hub.sh
 ```bash
 docker run -d --name monitor --restart unless-stopped \
   -p 127.0.0.1:28080:28080 -v monitor-data:/data -e TZ=Asia/Shanghai \
-  stqfdyr/monitor
+  ghcr.io/spot-probe/monitor
 ```
 
 `TZ` 设成 hub 所在的时区。应急密码在容器日志里：
@@ -28,7 +28,7 @@ docker run -d --name monitor --restart unless-stopped \
 docker logs monitor | grep Emergency
 ```
 
-compose 写法见 [Docker 部署](/install/docker)。密码忘了见[重置应急密码](/config/auth#重置应急密码)。
+compose 写法见 [Docker 部署](/install/docker)。
 
 <Note warn>
   这时面板还打不开：hub 只在本机监听，公网访问不到。下一步配反向代理。
