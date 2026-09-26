@@ -1,0 +1,88 @@
+<!doctype html>
+<!--
+  public/og.png 的来源文件（1200×630）。不是站点页面的一部分，不参与构建。
+
+  为什么用 HTML 而不是图像编辑器：这张图必须与站点品牌完全一致，而品牌真值在代码里
+  （favicon 的渐变、index.css 的 token）。用 HTML + 同一枚标记 + 同一套色值渲染，
+  改了配色重截一次即可，不会两边慢慢漂。
+
+  重截（在仓库根目录）：
+    python3 -m http.server 8788
+    node ../preview/shot.mjs http://127.0.0.1:8788/scripts/og-card.html \
+         /tmp/og.png 1200 630 1200 2 0
+    sips --resampleWidth 1200 /tmp/og.png --out public/og.png
+  2x 超采样后缩到 1200×630：文字边缘比直接按 1x 截干净。
+-->
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face {
+        font-family: "Inter Variable";
+        font-style: normal;
+        font-weight: 100 900;
+        src: url("../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2") format("woff2-variations");
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        width: 1200px; height: 630px; display: flex;
+        font-family: "Inter Variable", "PingFang SC", "Hiragino Sans GB", sans-serif;
+        /* 与 src/index.css 的 token 同值：改配色这里要跟着改，否则图会先漂 */
+        background: #f7f8fa; color: #1c2231;
+        -webkit-font-smoothing: antialiased;
+      }
+      .left { flex: 1; padding: 76px 56px 76px 84px; display: flex; flex-direction: column; }
+      .brand { display: flex; align-items: center; gap: 14px; }
+      .brand .name { font-size: 27px; font-weight: 600; letter-spacing: -0.02em; }
+      .brand .kind { font-size: 16px; color: #667085; }
+      h1 { margin-top: 54px; font-size: 60px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.14; }
+      p { margin-top: 22px; max-width: 520px; font-size: 23px; line-height: 1.62; color: #667085; }
+      .foot { margin-top: auto; display: flex; align-items: center; gap: 12px; font-size: 18px; color: #667085; }
+      .foot .dot { width: 8px; height: 8px; border-radius: 999px; background: #193cb8; }
+      /* 右侧色块：与 favicon 同一枚标记、同一段渐变（#193cb8 → #5b8cff） */
+      .right {
+        width: 386px; display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(160deg, #193cb8 0%, #5b8cff 100%);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="left">
+      <div class="brand">
+        <svg width="34" height="34" viewBox="0 0 16 16" aria-hidden="true">
+          <defs>
+            <linearGradient id="m" x1="0" y1="16" x2="0" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#193cb8" />
+              <stop offset="100%" stop-color="#5b8cff" />
+            </linearGradient>
+          </defs>
+          <g fill="url(#m)">
+            <rect x="2" y="9" width="3" height="5" rx="1" />
+            <rect x="6.5" y="5" width="3" height="9" rx="1" />
+            <rect x="11" y="2" width="3" height="12" rx="1" />
+          </g>
+        </svg>
+        <span class="name">Spot Monitor</span>
+        <span class="kind">文档</span>
+      </div>
+
+      <h1>服务器探针<br />文档</h1>
+      <p>用 Rust 写的服务器探针：单二进制、常驻数 MB 内存、默认只监听回环。</p>
+
+      <div class="foot">
+        <span class="dot"></span>
+        <span>spot-probe-docs.hualala.workers.dev</span>
+      </div>
+    </div>
+
+    <div class="right">
+      <svg width="188" height="188" viewBox="0 0 16 16" aria-hidden="true">
+        <g fill="#ffffff" fill-opacity="0.94">
+          <rect x="2" y="9" width="3" height="5" rx="1" />
+          <rect x="6.5" y="5" width="3" height="9" rx="1" />
+          <rect x="11" y="2" width="3" height="12" rx="1" />
+        </g>
+      </svg>
+    </div>
+  </body>
+</html>

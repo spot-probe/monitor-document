@@ -14,6 +14,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, 
 const fill = (html, r) => html
   .replaceAll("%TITLE%", () => esc(r.title))
   .replaceAll("%DESC%", () => esc(r.desc))
+  .replaceAll("%ORIGIN%", () => esc(SITE))
   .replaceAll("%CANONICAL%", () => esc(r.path === "/" ? `${SITE}/` : SITE + r.path))
 
 for (const r of routes) {
