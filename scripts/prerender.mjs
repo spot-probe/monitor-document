@@ -4,21 +4,24 @@
 import { statSync } from "node:fs"
 import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
-import { render, routes } from "../dist-ssr/entry-server.js"
+import { render, routes, SITE } from "../dist-ssr/entry-server.js"
 
 const dist = join(import.meta.dirname, "..", "dist")
 const template = await readFile(join(dist, "index.html"), "utf8")
 const pages = new Map()
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;")
+// 用函数形式的替换：标题/描述里的 "$" 在字符串替换里是特殊字符（$&、$1…）。
+const fill = (html, r) => html
+  .replaceAll("%TITLE%", () => esc(r.title))
+  .replaceAll("%DESC%", () => esc(r.desc))
+  .replaceAll("%CANONICAL%", () => esc(r.path === "/" ? `${SITE}/` : SITE + r.path))
 
 for (const r of routes) {
-  const html = template
-    .replace("<!--app-html-->", render(r.path))
-    .replace(/<title>.*?<\/title>/, `<title>${esc(r.title)}</title>`)
-    .replace(/(<meta name="description" content=").*?(")/, `$1${esc(r.desc)}$2`)
-  // "<route>.html", not "<route>/index.html": Pages drops the extension, so
-  // the canonical URL is the slashless one the in-app links already use --
-  // "/install/quick-start", with "/install/quick-start/" redirecting to it.
+  // 占位符先填、再插 app-html：渲染出来的正文里若出现 "%TITLE%" 这种字面量也不会被误替换。
+  const html = fill(template, r).replace("<!--app-html-->", render(r.path))
+  // "<route>.html", not "<route>/index.html"：Cloudflare 省略扩展名，所以规范 URL 是
+  // 站内链接已经在用的无斜杠形式 —— "/install/quick-start"，而 "/install/quick-start/"
+  // 会 307 到它（Workers 静态资源的 html_handling=auto-trailing-slash，见 wrangler.jsonc）。
   const file = r.path === "/" ? join(dist, "index.html") : join(dist, r.path.slice(1) + ".html")
   await mkdir(dirname(file), { recursive: true })
   await writeFile(file, html)
@@ -26,7 +29,14 @@ for (const r of routes) {
 }
 
 // Anything else -- an old link, a typo -- lands on the home page with a note.
-await writeFile(join(dist, "404.html"), template.replace("<!--app-html-->", ""))
+// 404 页不该有 canonical（指向任何一个真实 URL 都是错的）—— 注意要先删行、
+// 再填占位符，否则占位符已经被替换掉，就删不到了。
+const notFound = fill(template.replace(/^.*%CANONICAL%.*\n/gm, ""), {
+  title: "页面不存在 — Spot Monitor 文档",
+  desc: "这个地址没有对应的页面。",
+  path: "/",
+}).replace("<!--app-html-->", "")
+await writeFile(join(dist, "404.html"), notFound)
 
 console.log(`prerendered ${routes.length} routes`)
 

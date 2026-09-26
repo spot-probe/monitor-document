@@ -1,9 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <style>
-    rect.g { fill: #18181b }
-    @media (prefers-color-scheme: dark) { rect.g { fill: #fafafa } }
-  </style>
-  <rect class="g" x="4"  y="18" width="5" height="10" rx="1.5"/>
-  <rect class="g" x="13" y="10" width="5" height="18" rx="1.5"/>
-  <rect class="g" x="22" y="4"  width="5" height="24" rx="1.5"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <!-- 与 monitor-theme-default/public/favicon.svg 同一枚标记，保持两个站同一个品牌。
+       蓝渐变而不是单色：favicon 落在浏览器自己的标签栏上，深蓝在暗色栏里会糊、
+       亮蓝在浅色栏里会发白，渐变保证两头都还看得清。（上游这两处都是灰的。） -->
+  <defs>
+    <linearGradient id="mark" x1="0" y1="16" x2="0" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#193cb8"/>
+      <stop offset="100%" stop-color="#5b8cff"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#mark)">
+    <rect x="2" y="9" width="3" height="5" rx="1"/>
+    <rect x="6.5" y="5" width="3" height="9" rx="1"/>
+    <rect x="11" y="2" width="3" height="12" rx="1"/>
+  </g>
 </svg>
