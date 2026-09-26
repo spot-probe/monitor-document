@@ -102,9 +102,7 @@ monitor-hub
 添加和安装节点。
 
 <Note>
-  能不能添加节点，看的是**浏览器地址栏那个地址**，再加反代发来的 `X-Forwarded-Proto`，`--site` 补不了
-  这两样。从 IP 或明文地址进面板时，添加节点、批量添加和安装命令都不可用，填了 `--site` 也一样：
-  `--site` 只决定命令里写哪个域名、cookie 要不要 `Secure`，不改变入口本身是不是 HTTPS 域名。
-  回环地址不是例外——`http://127.0.0.1:PORT` 即使配了合法的 `--site` 也不能添加节点，因为 hub 拿到的
-  `Host` 仍是 `127.0.0.1`。
+  能不能添加节点，看两件事：hub 收到的 `Host` 必须是域名（不能是 IP，也不能是 `localhost`），以及这次请求
+  必须是走 HTTPS 进来的——反代发了 `X-Forwarded-Proto: https`，或者给 hub 配了合法的 `--site https://…`。
+  所以从 IP 直接进面板时，填了 `--site` 也加不了节点：`Host` 仍然是那个 IP。
 </Note>
