@@ -8,10 +8,13 @@
 
   重截（在仓库根目录）：
     python3 -m http.server 8788
-    node ../preview/shot.mjs http://127.0.0.1:8788/scripts/og-card.html \
-         /tmp/og.png 1200 630 1200 2 0
+    PREVIEW_PROFILE=/tmp/chrome-og node ../preview/shot.mjs \
+         http://127.0.0.1:8788/scripts/og-card.html /tmp/og.png 1200 630 1200 2 0
     sips --resampleWidth 1200 /tmp/og.png --out public/og.png
   2x 超采样后缩到 1200×630：文字边缘比直接按 1x 截干净。
+
+  ⚠️ PREVIEW_PROFILE 不能省：shot.mjs 默认把 Chrome 的配置目录写成 cwd 下的
+  `.chrome-profile`，在这里跑就会往仓库里塞 2.8 MB 的浏览器垃圾（已被我误伤过一次）。
 -->
 <html lang="zh-CN">
   <head>
