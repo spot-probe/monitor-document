@@ -6,6 +6,7 @@ import { Toc, TocMobile } from "@/components/Toc"
 import { mdxComponents } from "@/components/Mdx"
 import { Home } from "@/Home"
 import { docs, sectionOf } from "@/nav"
+import { metaOf } from "@/meta"
 import { pages } from "@/content"
 import { A, usePath } from "@/lib/router"
 import { REPO_DOC } from "@/site"
@@ -19,8 +20,8 @@ export function App({ url }: { url: string }) {
   const Page = pages[path]
 
   useEffect(() => {
-    document.title = doc ? `${doc.label} — monitor 文档` : "monitor — 服务器探针文档"
-  }, [doc])
+    document.title = metaOf(path).title
+  }, [path])
 
   return (
     <MDXProvider components={mdxComponents}>

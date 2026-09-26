@@ -26,7 +26,7 @@ export function Header({ path }: { path: string }) {
           </Button>
 
           <A to="/" className="flex items-baseline gap-2">
-            <span className="font-semibold tracking-tight">monitor</span>
+            <span className="font-semibold tracking-tight">Spot Monitor</span>
             <span className="hidden text-xs text-muted-foreground sm:inline">文档</span>
           </A>
 
@@ -45,7 +45,7 @@ export function Header({ path }: { path: string }) {
           <div className="absolute inset-0 bg-black/50" onClick={() => setMenu(false)} />
           <div className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-background shadow-xl">
             <div className="flex h-14 shrink-0 items-center justify-between border-b border-border pr-2 pl-5">
-              <span className="font-semibold tracking-tight">monitor</span>
+              <span className="font-semibold tracking-tight">Spot Monitor</span>
               <Button variant="ghost" size="icon-sm" aria-label="关闭" onClick={() => setMenu(false)}>
                 <X />
               </Button>

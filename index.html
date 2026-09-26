@@ -4,8 +4,23 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>monitor — 服务器探针文档</title>
-    <meta name="description" content="monitor 是一个用 Rust 写的服务器探针：单二进制、常驻数 MB 内存、默认只监听回环。安全、极简、高效。" />
+    <!-- %TITLE% / %DESC% / %CANONICAL% 由 scripts/prerender.mjs 按路由替换；
+         直接打开这个文件（开发服务器）时它们是字面量，这是有意的：
+         改完记得跑一次 npm run build 才看得到真实值。 -->
+    <title>%TITLE%</title>
+    <meta name="description" content="%DESC%" />
+    <link rel="canonical" href="%CANONICAL%" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Spot Monitor" />
+    <meta property="og:url" content="%CANONICAL%" />
+    <meta property="og:title" content="%TITLE%" />
+    <meta property="og:description" content="%DESC%" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="%TITLE%" />
+    <meta name="twitter:description" content="%DESC%" />
+    <!-- 与 src/index.css 的 --background 一致（oklch(1 0 0) / oklch(0.145 0 0)） -->
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
     <script>
       // Before first paint: a class change after hydration produces a white flash
       // on every navigation for dark-theme readers.
