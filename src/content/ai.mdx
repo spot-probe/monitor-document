@@ -42,7 +42,7 @@ hub、配好反代、接入第一个节点。也可以把 [`llms.txt`](/llms.txt
 
 ### 第二步：装 hub
     curl -fsSL -o install-hub.sh \
-      https://github.com/monitor-probe/monitor/releases/latest/download/install-hub.sh
+      https://raw.githubusercontent.com/spot-probe/monitor/main/install-hub.sh
     chmod +x install-hub.sh
     sudo ./install-hub.sh < /dev/null
 < /dev/null 让脚本不显示菜单，直接按默认值安装；端口换过的，加 --port <端口>。

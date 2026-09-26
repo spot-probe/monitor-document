@@ -4,7 +4,7 @@ docker run -d --name monitor --restart unless-stopped \
   stqfdyr/monitor
 ```
 
-镜像同时发布在 Docker Hub（`stqfdyr/monitor`）和 GHCR（`ghcr.io/monitor-probe/monitor`），内容相同，
+镜像发布在 GHCR（`ghcr.io/spot-probe/monitor`），
 支持 x86_64 与 aarch64。
 
 - `127.0.0.1:28080`：端口只对本机开放，域名由[反向代理](/install/reverse-proxy)接进来，上游写 `127.0.0.1:28080`
