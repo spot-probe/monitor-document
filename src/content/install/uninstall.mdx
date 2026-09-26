@@ -1,24 +1,11 @@
-先卸节点上的 agent，再卸 hub：agent 的一键卸载要从 hub 取脚本，hub 卸掉后只能手动卸载。
+先卸节点上的 agent，再卸 hub：agent 装在被监控的机器上、节点记在 hub 里，两边要分别清干净。
 
 ## 卸载 agent
 
 机器上的 agent 和面板上的节点要一起删：只删节点，agent 会拿着作废的 token 一直重连；只卸 agent，节点会
 一直留在面板上显示离线。
 
-### 一键卸载
-
-以 root 在要卸载的机器上执行：
-
-```bash
-curl -fsSL https://hub.example.com/install.sh | sh -s -- --uninstall
-```
-
-在**节点**页删除节点时，确认框里带着这条命令，复制下来再确认删除，两件事一起做完。和安装命令一样，只有
-从 HTTPS 域名进面板时才显示。命令里没有 token，所有节点通用，节点删掉之后照样能用。先在机器上卸载的，
-卸完再到面板上删节点。
-
-脚本同时清理 systemd 和 OpenRC 两套文件，只删 agent 装下的东西，即下面手动卸载列出的那些。这台机器还
-装了 hub 时，`/opt/monitor` 和里面 hub 的文件原样保留。重复执行没有副作用。
+agent 没有一键卸载，只能手动删；在面板上删节点也不会动那台机器上的服务。
 
 ### 手动卸载
 
@@ -33,8 +20,8 @@ rm -f /etc/systemd/system/monitor-agent.service
 systemctl daemon-reload
 # 删除安装时建的系统用户，agent 以它的身份运行
 userdel monitor-agent
-# 删除二进制，以及升级中断时留下的旧版
-rm -f /opt/monitor/monitor-agent /opt/monitor/monitor-agent.old
+# 删除二进制
+rm -f /opt/monitor/monitor-agent
 # 删除存放 hub 地址和 token 的 env 文件
 rm -f /opt/monitor/agent.env
 # 目录空了才会删掉；hub 也装在这里时原样保留
@@ -54,15 +41,15 @@ rm -f /etc/init.d/monitor-agent
 rm -f /var/log/monitor-agent.log
 # 删除安装时建的系统用户；Alpine 用 deluser，其它系统用 userdel
 deluser monitor-agent 2>/dev/null || userdel monitor-agent 2>/dev/null
-# 删除二进制，以及升级中断时留下的旧版
-rm -f /opt/monitor/monitor-agent /opt/monitor/monitor-agent.old
+# 删除二进制
+rm -f /opt/monitor/monitor-agent
 # 删除存放 hub 地址和 token 的 env 文件
 rm -f /opt/monitor/agent.env
 # 目录空了才会删掉；hub 也装在这里时原样保留
 rmdir /opt/monitor 2>/dev/null
 ```
 
-较早版本在 OpenRC 下不建这个用户，那一步什么也不做。
+安装脚本只在 systemd 下建这个用户，OpenRC 下这一步通常什么也不做。
 
 ## 卸载 hub
 
