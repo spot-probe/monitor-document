@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- %TITLE% / %DESC% / %CANONICAL% 由 scripts/prerender.mjs 按路由替换；
+    <!-- %TITLE% / %DESC% / %CANONICAL% / %ORIGIN% 由 scripts/prerender.mjs 按路由替换；
          直接打开这个文件（开发服务器）时它们是字面量，这是有意的：
          改完记得跑一次 npm run build 才看得到真实值。 -->
     <title>%TITLE%</title>
@@ -15,9 +15,17 @@
     <meta property="og:url" content="%CANONICAL%" />
     <meta property="og:title" content="%TITLE%" />
     <meta property="og:description" content="%DESC%" />
-    <meta name="twitter:card" content="summary" />
+    <!-- og:image 必须是绝对 URL，所以用 %ORIGIN%（即 src/site.ts 的 SITE）。
+         图由 scripts/og-card.html 渲染，重做方法写在那里面。 -->
+    <meta property="og:image" content="%ORIGIN%/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Spot Monitor — 服务器探针文档" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="%TITLE%" />
     <meta name="twitter:description" content="%DESC%" />
+    <meta name="twitter:image" content="%ORIGIN%/og.png" />
     <!-- 与 src/index.css 的 --background 一致（oklch(0.979 0.003 264.5) / oklch(0.182 0.013 264.2)） -->
     <meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0f1218" media="(prefers-color-scheme: dark)" />
