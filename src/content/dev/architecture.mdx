@@ -49,7 +49,7 @@ tcp  udp  procs
 
 `boot_id` 来自 `/proc/sys/kernel/random/boot_id`，后接 `/` 与所计网卡集合的摘要。它标明
 `net_rx_total` / `net_tx_total` 在哪段区间内可以相减：hub 只比较是否相等，变了就重新对基线。重启、
-改 `--iface`、网卡增减或被重新归类都走这一条。`iface` 回报当前的 `--iface`，面板用它显示并预填。
+改 `--iface`、网卡增减或被重新归类都走这一条。`iface` 回报当前的 `--iface`。
 
 ### hub → agent
 
@@ -79,20 +79,19 @@ GET  /agent/{arch}          公开，把 release 二进制从 GitHub 转发给�
 POST /api/agent/register    公开，凭窗口内有效的注册 key 换一个节点 token
 ```
 
-注册接口另认一个 `X-Node-Token` 头：安装脚本重跑时带上机器已有的 token，它仍对应节点就原样返回，不看
-窗口和 key，所以窗口关了也能重跑；对应不上再按 key 注册。
+注册接口按注册 key 换一个节点 token。安装脚本重跑时不会走这条路：它在机器上已经存了 token，脚本直接沿用，
+不再问 hub。
 
 `arch` 只认 `x86_64` 和 `aarch64`。二进制总是经 hub 转发，能连上 hub 就能装，只有 IPv6 或访问不了
-GitHub 的机器也一样。同时最多转发 4 份，其余排队最多 30 秒，仍轮不到的返回 503，安装脚本会自动重试。
+GitHub 的机器也一样。同时最多转发 4 份，超出的立刻返回 503，安装脚本不会重试。
 
 **读取**（登录看全部；未登录且公开页开着，只看公开节点）
 
 ```text
 GET /api/me
 GET /api/nodes
-GET /api/nodes/{id}/metrics?hours=N&points=W&series=metrics|ping
+GET /api/nodes/{id}/metrics?hours=N&points=W&series=metrics,ping,availability
 GET /api/ws                 每 2 秒推一次快照
-GET /api/themes/{short}/config
 ```
 
 **登录**
@@ -106,7 +105,7 @@ GET  /api/auth/github   GET  /api/auth/github/callback
 
 ```text
 POST   /api/nodes
-PUT    /api/nodes/order            PUT /api/nodes/batch
+PUT    /api/nodes/order
 PUT    /api/nodes/{id}             DELETE /api/nodes/{id}
 POST   /api/nodes/{id}/token       PUT /api/nodes/{id}/traffic
 POST   /api/register-window        DELETE /api/register-window
@@ -114,10 +113,10 @@ GET    /api/ping-tasks             POST /api/ping-tasks
 DELETE /api/ping-tasks/{id}
 GET    /api/settings               PUT /api/settings
 GET    /api/sessions               DELETE /api/sessions/{id}
-POST   /api/notify/test            GET  /api/version
+POST   /api/notify/test
 GET    /api/themes                 POST /api/themes
 DELETE /api/themes/{short}         GET  /api/themes/{short}/preview
-POST   /api/themes/{short}/update  PUT  /api/themes/{short}/config
+POST   /api/themes/{short}/update
 GET    /api/db                     GET  /api/db/backup
 POST   /api/db/restore             POST /api/db/vacuum
 ```
