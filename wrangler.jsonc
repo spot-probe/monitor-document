@@ -1,0 +1,22 @@
+{
+  // 本仓库是「预渲染静态站」：scripts/prerender.mjs 把每个路由写成
+  // dist/<route>.html，外加 dist/404.html。这正是 Cloudflare 文档里
+  // 「Static Site Generation (SSG) and custom 404 pages」的场景，所以：
+  //   html_handling=auto-trailing-slash → /install/hub 命中 install/hub.html
+  //   not_found_handling=404-page       → 未命中时返回自己的 404.html（404 状态码）
+  //
+  // 这个文件还有第二个作用，别删：wrangler 只在「仓库里没有 wrangler 配置文件」时
+  // 才启动自动配置（automatic configuration）。自动配置会装 @cloudflare/vite-plugin，
+  // 那会把 SSR 产物名从 dist-ssr/entry-server.js 改成 dist-ssr/assets/entry-server-<hash>.js，
+  // 而 prerender.mjs 是写死 import 前者的 → 构建报 ERR_MODULE_NOT_FOUND。
+  // 有了这个文件，自动配置不再运行。
+  //
+  // name 必须与 Cloudflare 上的项目名一致，否则会部署成另一个 Worker。
+  "name": "spot-probe-docs",
+  "compatibility_date": "2026-09-26",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}
