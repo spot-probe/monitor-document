@@ -30,7 +30,7 @@ export const nav: Section[] = [
     title: "配置",
     items: [
       { path: "/config/auth", label: "登录与安全", desc: "应急密码与 GitHub 单点登录的配置、会话列表，以及登录不通时的排查。", keywords: "github oauth sso 登录 密码 应急 白名单 callback 会话 session ip 设备 来源" },
-      { path: "/config/nodes", label: "节点", desc: "节点的各项设置、地址与国家的来源、到期与自动续期，以及分组。", keywords: "节点 编辑 公开 隐藏 备注 分组 group 排序 地址 ip 国家 地区 到期 续期 续费 付款周期 价格" },
+      { path: "/config/nodes", label: "节点", desc: "节点的各项设置、地址与国家的来源与手动填写、到期与自动续期，以及分组。", keywords: "节点 编辑 公开 隐藏 备注 分组 group 排序 地址 ip ipv4 ipv6 国家 地区 手填 手动填写 覆盖 出口 网卡 透明代理 到期 续期 续费 付款周期 价格" },
       { path: "/config/ping", label: "延迟监控", desc: "让节点定时 TCP 连接一个目标，在公开页画出延迟和丢包。", keywords: "延迟 ping tcping 丢包 探测 监控 目标 latency" },
       { path: "/config/traffic", label: "流量统计", desc: "三个流量数字的算法、统计哪些网卡、月度周期与配额口径。", keywords: "流量 traffic 重置日 月流量 计费 sum max 上行 下行 配额 网卡 iface 校正" },
       { path: "/config/notify", label: "通知", desc: "Telegram 与 Webhook 推送掉线、流量、到期和登录，以及常见服务的请求体写法。", keywords: "通知 告警 telegram tg bot webhook discord slack 钉钉 企业微信 飞书 bark ntfy gotify 离线 掉线 到期" },
