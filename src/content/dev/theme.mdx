@@ -33,6 +33,46 @@
 少写一个字段时，在面板上传会被拒绝，并指出缺的是哪个；直接放进 hub 的 `--themes` 目录的，主题不会
 出现在列表里，hub 日志里有一条警告。
 
+### 主题设置（`config`）
+
+站长能在面板里改的东西，由主题自己声明，不必改主题包再重新上传。`config` 是一个数组，
+按顺序就是表单的顺序：
+
+```json
+"config": [
+  { "type": "title", "label": "布局" },
+  { "key": "show_summary", "type": "boolean", "label": "显示汇总", "default": true,
+    "help": "节点列表上方的四格汇总" },
+  { "key": "default_view", "type": "select", "label": "默认视图", "default": "grid",
+    "options": [{ "value": "grid", "label": "网格" }, { "value": "list", "label": "列表" }] }
+]
+```
+
+| 类型 | 值 | 表单画成 |
+|---|---|---|
+| `string` | 字符串 | 单行输入框 |
+| `text` | 字符串 | 多行输入框 |
+| `number` | 数字 | 数字输入框，可给 `min` / `max` |
+| `boolean` | true / false | 开关 |
+| `select` | 字符串 | 下拉框，`options` 给出可选项 |
+| `title` | —— | 分组标题，不取值，只要 `label` |
+
+字段自身除 `key`、`type`、`default` 外都可以省：`label` 缺省用 `key`，`help` 是说明文字。
+**面板只存与默认值不同的项**，其余用主题声明的默认值补上——所以日后改了某个默认值，没动过
+这一项的站点会跟着变。主题作者改表单不认识的 key 也会被保留。
+
+在 `theme.json` 里写下 `config` 之后，站长在面板的「主题」页会看到设置按钮：
+
+- `GET /api/themes/{short}/config` 返回站长改过的项，没存过是 `{}`；匿名可读（公开页关着时 401）
+- `PUT /api/themes/{short}/config` 需要管理员登录，且主题须已安装
+
+值由 hub 按主题保存，**更新、重装、删除主题都不会丢**，数据库备份也带着它。
+
+读回来时**自己校验**：hub 不按声明检查写入的值，而且「在某个版本下存的值」会遇到「下一个版本」。
+推荐的写法是逐个字段比对类型，不符就用默认值；**任何失败都退回默认值**——包括装在没有这个
+接口的老 hub 上时的 404。本项目的默认主题就是这么做的（`src/lib/config.ts`），装到老 hub 上
+照常渲染。
+
 ### 上限
 
 | 限制 | 值 |
@@ -54,6 +94,7 @@
 | `GET /api/nodes` | 节点列表、实时指标、累计流量、可用率 |
 | `GET /api/nodes/{id}/metrics` | 历史指标、延迟记录与在线状态时间轴 |
 | `GET /api/ws` | 每 2 秒推送一次节点快照的 WebSocket |
+| `GET /api/themes/{short}/config` | 站长保存过的主题设置，见[主题设置](#主题设置config) |
 
 `metrics` 的三个查询参数都可以省：
 
