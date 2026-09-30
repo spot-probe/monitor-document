@@ -178,10 +178,16 @@ curl -s --http1.1 --max-time 3 -o /dev/null -w '%{http_code}\n' \
   https://hub.example.com/api/ws
 ```
 
-面板**节点**页的「添加节点」能点，说明是从 HTTPS 域名进的；从 IP 或明文地址进面板时它是灰的。hub 看三样：
+面板**节点**页的「添加节点」能点，说明入口被判为可用：要么是从 HTTPS 域名进的，要么是**同一内网直连**
+（私网 IP + 明文，且没有经过反代，见 [内网直连可以用明文](/install/hub#内网直连可以用明文)）。从公网的
+IP 或明文地址进面板时它是灰的。hub 看三样：
 反代转发过来的 `Host`（必须是域名）、`X-Forwarded-Proto`（必须是 `https`，没给 hub 配 `--site` 时尤其
 重要），以及浏览器发来的 `Origin`（带了就必须和 `Host` 同源）。所以反代既要在 `Host` 里保留域名、透传
 `X-Forwarded-Proto`，也不要清掉或改写 `Origin`。
+
+上面那个「内网直连」的例外不会漏进来：它要求这次请求**没有**声明 `X-Forwarded-Proto`，且 hub 看到的
+客户端地址（本机反代会取 `X-Forwarded-For` 的最后一段）是私网地址。反代声明了 https、或转发的是一段
+公网地址，都回到老规矩。
 
 `X-Forwarded-Proto` 是否生效，看登录后的会话 cookie 有没有 `Secure` 标志：浏览器开发者工具的
 应用 → Cookie 里，`monitor_session` 那一行。
