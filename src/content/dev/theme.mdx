@@ -156,6 +156,14 @@ const groups = [...new Set(nodes.map((n) => n.group ?? "").filter(Boolean))]
 - `d7`、`d30`：近 7 天、近 30 天的比例，0–1
 - `from7`、`from30`、`to`：两个窗口实际覆盖的区间（epoch 秒）。窗口会被节点自己的创建时间和 hub 的
   保留天数截短，所以别把「近 30 天」写死，按 `from`/`to` 说跨度
+- **档位也不要写死**：`GET /api/me` 的 `history_days` 是这台 hub 保留的天数，按它生成档位，
+  并且**不要给出超过它的档位**——那会画出比所选窗口更短的图，看起来像丢了数据，而不是像上限。
+  这个字段是后来才有的，**旧 hub 不会返回它**，取不到时回退到 7 天。默认主题的
+  `src/lib/ranges.ts` 就是这么做的，可以直接照抄。
+
+  ```json
+  { "history_days": 90 }
+  ```
 - 它衡量的是「agent 有没有在跟 hub 说话」，不是探测目标通不通；后者是 `ping` 的 `loss`
 
 按小时的时间轴和故障列表由 `metrics` 的 `availability` 系列给出：
