@@ -202,3 +202,7 @@ token 重连时得到 401。只在 token 可能泄露时使用。
 
 下载失败时脚本在停掉旧 agent 之前就退出：升级失败的机器照旧运行原来的版本，安装失败的机器也不会在面板上
 留下空节点（下载在注册之前）。
+
+> **用 ICMP 监控的话**：agent 以无特权的 `monitor-agent` 用户运行，ICMP 需要宿主机允许非特权
+> 回显（`net.ipv4.ping_group_range`）或给服务 `CAP_NET_RAW`，IPv6 的 ICMP 需要后者。
+> 建任务前可以先跑 `monitor-agent --ping 1.1.1.1` 确认。详见[延迟与丢包](/config/ping#icmp-延迟检测)。
