@@ -44,8 +44,22 @@
 
 agent 以无特权的 `monitor-agent` 用户运行，所以 ICMP 需要下面之一：
 
-- **宿主机允许非特权 ICMP**：`sysctl net.ipv4.ping_group_range` 覆盖 `monitor-agent` 的 gid
-  （Debian/Ubuntu/Fedora 默认通常允许）。这是最省事的方式。
+- **宿主机允许非特权 ICMP**（最省事）。先看现在的值：
+
+  ```sh
+  sysctl net.ipv4.ping_group_range
+  id monitor-agent
+  ```
+
+  **`1 0` 就是谁都不允许**（不少系统的内核默认值，实测一台 Ubuntu 云主机就是如此）。把 agent 的
+  gid 放进去，只放它一个：
+
+  ```sh
+  sysctl -w net.ipv4.ping_group_range="985 985"          # 985 换成 id monitor-agent 的 gid
+  echo 'net.ipv4.ping_group_range = 985 985' > /etc/sysctl.d/99-monitor-agent.conf
+  ```
+
+  这是**按网络命名空间**生效的：agent 若跑在容器里，要改的是那个容器的 ✓
 - **给服务能力**：服务单元里加 `AmbientCapabilities=CAP_NET_RAW`。单元由 `install.sh` 生成，
   所以**已装过的机器要重装/升级一次**才会带上这一行。
 - **IPv6 的 ICMP 需要 `CAP_NET_RAW`**：`ping_group_range` 只管 IPv4。
