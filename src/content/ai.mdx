@@ -9,12 +9,12 @@ hub、配好反代、接入第一个节点。也可以把 [`llms.txt`](/llms.txt
 ## 提示词
 
 ```text
-你要在一台 Linux 服务器上部署 monitor，一个 Rust 写的服务器探针。
-文档：https://monitor-document.pages.dev/
+你要在一台 Linux 服务器上部署 Spot Monitor，一个 Rust 写的服务器探针。
+文档：https://spot-probe-docs.hualala.workers.dev/
 
 ## 你要知道的前提
 
-- monitor 由三部分组成：hub（面板 + API，装在一台机器上）、agent（装在每台被监控的
+- Spot Monitor 由三部分组成：hub（面板 + API，装在一台机器上）、agent（装在每台被监控的
   机器上）、主题（公开状态页的皮肤，默认已内置）。
 - hub 是单个 Rust 二进制加一个 SQLite 文件。零配置文件，所有设置存在数据库里。
 - 一键脚本装出来的 hub **默认只监听 127.0.0.1**，这是刻意的安全设计。公网部署不要改成
@@ -136,7 +136,7 @@ WebSocket 能升级，期望输出 101（升级后连接保持，由 --max-time 
 - 不要把 hub 改成监听 0.0.0.0 或者去开 28080 的防火墙端口。
 - 不要给 agent 写 Docker 部署方案，它没有镜像，也不需要。
 - 不要建议加 CPU / 内存这类负载告警、WebSSH、插件，这个项目明确不做这些。
-  掉线、流量、到期通知是内置的，在「通知」页配置。
+  掉线、流量、到期通知是内置的，在「通用」→「通知」里配置。
 - 不要在「设置」里填 GitHub 代理，除非确认这台机器真的拉不到 GitHub Release。
   那个地址返回的字节会被装到每一台节点上作为 agent 运行。
 ```
