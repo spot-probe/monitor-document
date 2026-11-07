@@ -33,15 +33,13 @@ WebSocket 上承载 JSON-RPC 2.0 通知：只有 `method` 和 `params`，没有 
 | `hello` | `Facts` | 每次连接建立后一次 |
 | `report` | `Metrics` | 每 `--interval` 秒 |
 | `ping.result` | `{ task_id, latency_ms }`，`-1` 表示连不上 | 每个探测任务按自己的间隔 |
-| `probe` | 各服务的流媒体探测结论，按服务名索引 | 每 6 小时一次（按节点错开） |
 | `upgrade.report` | `{ ok, reason, version }` | 一次远程升级结束，含被拒 |
 
 `Facts`：hostname、os、kernel、arch、virt、cpu_name、cpu_cores、mem_total、swap_total、
 disk_total、agent_version、ipv4、ipv6
 
-`hello` 另外带三个标记：`allow_remote_upgrade` 与 `allow_ip_quality`（这台机器授不授权，见
-[接入节点](/install/agent#安装选项)），以及 `stream_probe`（这个版本会不会探流媒体——**能力**，
-与授权是两件事）。
+`hello` 另外带两个标记：`allow_remote_upgrade` 与 `allow_ip_quality` —— 这台机器授不授权，
+见[接入节点](/install/agent#安装选项)。hub 读得到它们，改不了。
 
 `Metrics`：
 
@@ -104,7 +102,6 @@ GitHub 的机器也一样。同时最多转发 4 份，超出的立刻返回 503
 GET /api/me
 GET /api/nodes
 GET /api/nodes/{id}/metrics?hours=N&points=W&series=metrics,ping,availability
-GET /api/nodes/{id}/probe-history   某台节点的流媒体探测历史
 GET /api/overview/series?hours=N&group=  全队按天聚合（总览页的趋势图）
 GET /api/nodes/at-risk              三条「需要处理的节点」榜单
 GET /api/nodes/ping-series?hours=N&points=W  一次拿整个探测任务的各节点序列
@@ -157,7 +154,7 @@ POST   /api/db/restore             POST /api/db/vacuum
 
 ## 数据模型
 
-十五张表。schema 版本记在 SQLite 自带的 `PRAGMA user_version` 里。
+十四张表。schema 版本记在 SQLite 自带的 `PRAGMA user_version` 里。
 
 | 表 | 作用 |
 |---|---|
@@ -171,7 +168,6 @@ POST   /api/db/restore             POST /api/db/vacuum
 | `ping_record` | 探测结果，同样先折叠进 `ping_hour` 再删 |
 | `ping_hour` | 小时汇总：该小时的中位数、上下界与丢包数，按保留天数删 |
 | `ping_last` | 每个任务「最近一次拿到结果」，跨重启存活 |
-| `probe_history` | 流媒体探测的历次结论（面板的点阵用它） |
 | `risk_day` | 在线风险库的每日额度账本与原始响应，只留最近 30 天 |
 | `notify_state` | 通知的去重状态（哪个版本已经说过了） |
 | `session` | 登录会话，存 sha256，14 天过期 |
