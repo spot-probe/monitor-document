@@ -34,7 +34,6 @@ export const nav: Section[] = [
       { path: "/config/nodes", label: "节点", desc: "节点的各项设置、地址与国家的来源与手动填写、到期与自动续期，以及分组。", keywords: "节点 编辑 公开 隐藏 备注 分组 group 排序 地址 ip ipv4 ipv6 国家 地区 手填 手动填写 覆盖 出口 网卡 透明代理 到期 续期 续费 付款周期 价格" },
       { path: "/config/ip-quality", label: "IP 质量与风险", desc: "按节点授权地查 IP 归属与风险：本地库（城市 / ASN / Tor）与在线风险库。", keywords: "IP 质量 归属 城市 ASN Tor 风险 代理 机房 数据库 maxmind db-ip 许可 allow-ip-quality" },
       { path: "/config/ping", label: "延迟监控", desc: "让节点定时 TCP 连接一个目标，在公开页画出延迟和丢包。", keywords: "延迟 ping tcping 丢包 探测 监控 目标 latency" },
-      { path: "/config/unlock", label: "流媒体解锁探测", desc: "agent 定期探测流媒体解锁情况，面板用「节点实测」与探测历史呈现。", keywords: "流媒体 解锁 netflix 奈飞 chatgpt youtube tiktok reddit prime 探测 probe 解锁检测" },
       { path: "/config/traffic", label: "流量统计", desc: "三个流量数字的算法、统计哪些网卡、月度周期与配额口径。", keywords: "流量 traffic 重置日 月流量 计费 sum max 上行 下行 配额 网卡 iface 校正" },
       { path: "/config/notify", label: "通知", desc: "Telegram 与 Webhook 推送掉线、流量、到期和登录，流量报告，以及常见服务的请求体写法。", keywords: "通知 告警 telegram tg bot webhook discord slack 钉钉 企业微信 飞书 bark ntfy gotify 离线 掉线 到期 流量报告 日报 周报 月报 年报 /status /nodes" },
       { path: "/config/data", label: "数据与备份", desc: "历史保留天数、回收空间、备份与恢复，以及把 hub 搬到另一台机器。", keywords: "数据 备份 恢复 导出 导入 backup restore 迁移 搬家 vacuum 回收空间 保留天数 数据库" },
